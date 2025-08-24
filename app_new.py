@@ -276,7 +276,7 @@ def render_sidebar():
                     value=st.session_state.specs.get("LSL"), 
                     placeholder="Lower", 
                     key="sidebar_lsl",
-                    format="%.4f",
+                    format="%.3f",
                     help="Lower Specification Limit"
                 )
             with spec_col2:
@@ -285,7 +285,7 @@ def render_sidebar():
                     value=st.session_state.specs.get("USL"), 
                     placeholder="Upper", 
                     key="sidebar_usl",
-                    format="%.4f",
+                    format="%.3f",
                     help="Upper Specification Limit"
                 )
             with spec_col3:
@@ -312,12 +312,12 @@ def render_sidebar():
             with stat_col1:
                 st.markdown('<div class="small-metric">', unsafe_allow_html=True)
                 st.metric("n", len(data_series), help="Sample size")
-                st.metric("σ", f"{data_series.std():.4f}", help="Standard deviation")
+                st.metric("σ", f"{data_series.std():.3f}", help="Standard deviation")
                 st.markdown('</div>', unsafe_allow_html=True)
             with stat_col2:
                 st.markdown('<div class="small-metric">', unsafe_allow_html=True)
-                st.metric("x̄", f"{data_series.mean():.4f}", help="Sample mean")  
-                st.metric("Range", f"{data_series.max() - data_series.min():.4f}", help="Max - Min")
+                st.metric("x̄", f"{data_series.mean():.3f}", help="Sample mean")  
+                st.metric("Range", f"{data_series.max() - data_series.min():.3f}", help="Max - Min")
                 st.markdown('</div>', unsafe_allow_html=True)
 
             st.markdown("---")
@@ -336,8 +336,8 @@ def render_sidebar():
                 st.error("❌ LSL must be less than USL")
             elif lsl is not None or usl is not None:
                 specs_status = []
-                if lsl is not None: specs_status.append(f"LSL: {lsl:.4f}")
-                if usl is not None: specs_status.append(f"USL: {usl:.4f}")
+                if lsl is not None: specs_status.append(f"LSL: {lsl:.3f}")
+                if usl is not None: specs_status.append(f"USL: {usl:.3f}")
                 st.success("✅ " + " | ".join(specs_status))
 
 def render_overview_tab():
@@ -381,7 +381,7 @@ def render_overview_tab():
         
         for col in ["AIC", "BIC", "KS p-value"]:
             if col in display_df.columns:
-                display_df[col] = display_df[col].apply(lambda x: f"{x:.4f}" if pd.notnull(x) else "N/A")
+                display_df[col] = display_df[col].apply(lambda x: f"{x:.3f}" if pd.notnull(x) else "N/A")
         
         st.dataframe(display_df, use_container_width=True)
 
@@ -555,16 +555,16 @@ def render_capability_tab():
                 tol_col1, tol_col2, tol_col3, tol_col4 = st.columns(4)
                 
                 with tol_col1:
-                    st.metric("TI Lower", f"{lower:.4f}")
+                    st.metric("TI Lower", f"{lower:.3f}")
                 with tol_col2:
-                    st.metric("TI Upper", f"{upper:.4f}")
+                    st.metric("TI Upper", f"{upper:.3f}")
                 with tol_col3:
                     st.metric(f"Factor ({factor_name})", f"{ti_result['factor']:.3f}")
                     st.caption(f"Lots: {ti_result.get('n_lots', 'N/A')}")
                 with tol_col4:
                     if scan_result and scan_result["success"]:
                         st.metric("Max Coverage", f"{scan_result['p_star']*100:.1f}%")
-                        st.caption(f"OOS: {scan_result['oos_ti']*100:.2f}%")
+                        st.caption(f"OOS: {scan_result['oos_ti']*100:.3f}%")
                     else:
                         st.metric("Max Coverage", "Failed")
                 
@@ -595,16 +595,16 @@ def render_capability_tab():
                             factor = z_beta2 * (1 + 1/n_e)**0.5 if n_e > 0 else 0
                             st.markdown(f"""
                             **Two-Sided Formula Applied:**
-                            $$TI = {ybar_star:.4f} \\pm {z_beta2:.3f} \\sqrt{{1 + 1/{n_e:.2f}}} \\sqrt{{{var_upper:.4f}}}$$
-                            $$TI = {ybar_star:.4f} \\pm {factor:.3f} \\times {var_upper**0.5:.4f}$$
-                            $$TI = [{lower:.4f}, {upper:.4f}]$$
+                            $$TI = {ybar_star:.3f} \\pm {z_beta2:.3f} \\sqrt{{1 + 1/{n_e:.3f}}} \\sqrt{{{var_upper:.3f}}}$$
+                            $$TI = {ybar_star:.3f} \\pm {factor:.3f} \\times {var_upper**0.5:.3f}$$
+                            $$TI = [{lower:.3f}, {upper:.3f}]$$
                             """)
                         else:
                             st.markdown(f"""
                             **One-Sided Formula Applied:**
-                            $$TI = {ybar_star:.4f} \\pm {z_beta:.3f} \\sqrt{{{var_upper:.4f}}} \\pm {z_gamma:.3f} \\sqrt{{{var_ybar_star:.6f}}}$$
-                            $$TI = {ybar_star:.4f} \\pm {z_beta * var_upper**0.5:.4f} \\pm {z_gamma * var_ybar_star**0.5:.4f}$$
-                            $$TI = [{lower:.4f}, {upper:.4f}]$$
+                            $$TI = {ybar_star:.3f} \\pm {z_beta:.3f} \\sqrt{{{var_upper:.3f}}} \\pm {z_gamma:.3f} \\sqrt{{{var_ybar_star:.3f}}}$$
+                            $$TI = {ybar_star:.3f} \\pm {z_beta * var_upper**0.5:.3f} \\pm {z_gamma * var_ybar_star**0.5:.3f}$$
+                            $$TI = [{lower:.3f}, {upper:.3f}]$$
                             """)
                         
                         st.markdown(f"""
@@ -612,11 +612,11 @@ def render_capability_tab():
                         | Parameter | Value | Description |
                         |-----------|-------|-------------|
                         | $I$ | {n_lots} | Number of lots |
-                        | $\\bar{{Y}}^{{**}}$ | {ybar_star:.4f} | Mean of lot means |
-                        | $n_E$ | {n_e:.2f} | Effective sample size |
-                        | $S^2_L$ | {lot_var:.6f} | Lot-to-lot variance |
-                        | $S^2_E$ | {error_var:.6f} | Within-lot variance |
-                        | $U$ | {var_upper:.4f} | Variance upper limit |
+                        | $\\bar{{Y}}^{{**}}$ | {ybar_star:.3f} | Mean of lot means |
+                        | $n_E$ | {n_e:.3f} | Effective sample size |
+                        | $S^2_L$ | {lot_var:.3f} | Lot-to-lot variance |
+                        | $S^2_E$ | {error_var:.3f} | Within-lot variance |
+                        | $U$ | {var_upper:.3f} | Variance upper limit |
                         | Type | {interval_type.replace('-', ' ').title()} | Auto-selected based on specs |
                         
                         **Settings:** Coverage = {p_coverage * 100:.1f}%, Confidence = {conf_level * 100:.0f}%
@@ -775,6 +775,164 @@ def render_capability_tab():
             - Compare methods for robustness check
             """)
 
+def render_export_tab():
+    """Render the export functionality tab."""
+    from services.export import ExportManager, PDF_AVAILABLE
+    
+    if 'value_col' not in st.session_state.specs or st.session_state.specs['value_col'] is None:
+        st.warning("⬅️ Please upload data and complete analysis in other tabs first.")
+        return
+    
+    st.markdown("### 💾 Export Analysis Results")
+    st.caption("Download your analysis results in various formats")
+    
+    # Get current analysis data
+    value_col = st.session_state.specs.get("value_col")
+    data_series = st.session_state.data[value_col].dropna()
+    lsl = st.session_state.specs.get("LSL")
+    usl = st.session_state.specs.get("USL")
+    
+    # Check if we have capability analysis results
+    has_capability_data = (lsl is not None or usl is not None)
+    has_tolerance_data = hasattr(st.session_state, 'ti_results') and st.session_state.ti_results
+    
+    export_manager = ExportManager()
+    
+    # Create columns for different export options
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("#### 📄 Data Export")
+        
+        # Raw data export
+        if st.button("📊 Export Raw Data (CSV)", use_container_width=True):
+            csv_data = export_manager.export_raw_data(st.session_state.data)
+            filename = export_manager.create_filename("raw_data", "csv")
+            st.download_button(
+                label="⬇️ Download CSV",
+                data=csv_data,
+                file_name=filename,
+                mime="text/csv"
+            )
+        
+        # Excel export with multiple sheets
+        if st.button("📈 Export Analysis Summary (Excel)", use_container_width=True):
+            # Prepare capability results if available
+            capability_results = {}
+            if has_capability_data:
+                from services.capability import (
+                    calculate_normal_ppk, 
+                    calculate_fitted_distribution_ppk, 
+                    calculate_empirical_ppk
+                )
+                
+                capability_results["Normal"] = calculate_normal_ppk(data_series, lsl, usl)
+                capability_results["Empirical"] = calculate_empirical_ppk(data_series, lsl, usl)
+                
+                distribution_name = st.session_state.selected_distribution
+                distribution_params = st.session_state.distribution_params
+                if distribution_name and distribution_params:
+                    capability_results["Fitted"] = calculate_fitted_distribution_ppk(
+                        data_series, distribution_name, distribution_params, lsl, usl
+                    )
+            
+            # Create summary table
+            summary_df = export_manager.create_analysis_summary(
+                data_series, 
+                capability_results,
+                st.session_state.ti_results if has_tolerance_data else None,
+                {"LSL": lsl, "USL": usl}
+            )
+            
+            # Prepare data for Excel
+            excel_data = {
+                "Raw_Data": st.session_state.data,
+                "Analysis_Summary": summary_df
+            }
+            
+            excel_bytes = export_manager.export_data_to_excel(excel_data)
+            filename = export_manager.create_filename("analysis_summary", "xlsx")
+            st.download_button(
+                label="⬇️ Download Excel Report",
+                data=excel_bytes,
+                file_name=filename,
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+    
+    with col2:
+        st.markdown("#### 📋 Reports & Charts")
+        
+        # PDF report (if available)
+        if PDF_AVAILABLE and has_capability_data:
+            if st.button("📄 Generate PDF Report", use_container_width=True):
+                try:
+                    # Prepare capability results
+                    capability_results = {}
+                    from services.capability import (
+                        calculate_normal_ppk, 
+                        calculate_fitted_distribution_ppk, 
+                        calculate_empirical_ppk
+                    )
+                    
+                    capability_results["Normal"] = calculate_normal_ppk(data_series, lsl, usl)
+                    capability_results["Empirical"] = calculate_empirical_ppk(data_series, lsl, usl)
+                    
+                    distribution_name = st.session_state.selected_distribution
+                    distribution_params = st.session_state.distribution_params
+                    if distribution_name and distribution_params:
+                        capability_results["Fitted"] = calculate_fitted_distribution_ppk(
+                            data_series, distribution_name, distribution_params, lsl, usl
+                        )
+                    
+                    pdf_bytes = export_manager.generate_pdf_report(
+                        data_series,
+                        capability_results,
+                        st.session_state.ti_results if has_tolerance_data else None,
+                        {"LSL": lsl, "USL": usl}
+                    )
+                    
+                    filename = export_manager.create_filename("capability_report", "pdf")
+                    st.download_button(
+                        label="⬇️ Download PDF Report",
+                        data=pdf_bytes,
+                        file_name=filename,
+                        mime="application/pdf"
+                    )
+                except Exception as e:
+                    st.error(f"PDF generation failed: {str(e)}")
+        
+        elif has_capability_data:
+            st.info("📄 PDF reports require `reportlab` package. Install with: `pip install reportlab`")
+        
+        else:
+            st.info("📊 Complete capability analysis first to generate reports")
+        
+        # Chart export
+        st.markdown("**Export Charts**")
+        chart_format = st.selectbox("Chart Format", ["PNG", "SVG", "HTML"], key="chart_format")
+        
+        if st.button(f"📸 Export Charts ({chart_format})", use_container_width=True):
+            st.info("🚧 Chart export functionality - coming soon!")
+    
+    # Show export status/info
+    st.markdown("---")
+    
+    with st.expander("ℹ️ Export Information", expanded=False):
+        st.markdown("""
+        **Available Export Options:**
+        
+        📊 **Raw Data (CSV)**: Your original uploaded data  
+        📈 **Analysis Summary (Excel)**: Multi-sheet workbook with raw data and statistical summary  
+        📄 **PDF Report**: Comprehensive analysis report (requires reportlab package)  
+        📸 **Charts**: Export visualizations in various formats
+        
+        **File Naming Convention:**  
+        All exported files are automatically named with timestamps to avoid conflicts.
+        
+        **Privacy Note:**  
+        All exports are generated locally in your browser. No data is sent to external servers.
+        """)
+
 def render_control_charts_tab():
     """Render the new categorical control chart tab."""
     
@@ -853,7 +1011,7 @@ def main():
         render_control_charts_tab()
         
     with tabs[3]:
-        st.info("🚧 Export functionality - coming soon!")
+        render_export_tab()
 
 if __name__ == "__main__":
     main()

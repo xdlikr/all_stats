@@ -78,7 +78,7 @@ def check_process_stability(data: pd.Series, window_size: int = None) -> Dict[st
                 z_score = (runs - expected_runs) / runs_std
                 if z_score < -2:  # Too few runs, possible trend
                     result["is_stable"] = False
-                    result["warnings"].append(f"Possible trend detected (runs test z-score: {z_score:.2f})")
+                    result["warnings"].append(f"Possible trend detected (runs test z-score: {z_score:.3f})")
         
         result["tests_performed"].append("Runs Test")
         
@@ -99,7 +99,7 @@ def check_process_stability(data: pd.Series, window_size: int = None) -> Dict[st
             
             if shift_magnitude > 2:  # Significant shift detected
                 result["is_stable"] = False
-                result["warnings"].append(f"Possible process shift detected (magnitude: {shift_magnitude:.2f} sigma)")
+                result["warnings"].append(f"Possible process shift detected (magnitude: {shift_magnitude:.3f} sigma)")
         
         result["tests_performed"].append("Split-Half Shift Test")
         

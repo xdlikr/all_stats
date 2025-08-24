@@ -27,9 +27,9 @@ def test_basic_functionality():
     print("\n1. Testing basic statistics...")
     stats = calculate_basic_statistics(data_series)
     print(f"   Sample size: {stats['n']}")
-    print(f"   Mean: {stats['mean']:.4f}")
-    print(f"   Std Dev: {stats['std_dev']:.4f}")
-    print(f"   Skewness: {stats['skewness']:.4f}")
+    print(f"   Mean: {stats['mean']:.3f}")
+    print(f"   Std Dev: {stats['std_dev']:.3f}")
+    print(f"   Skewness: {stats['skewness']:.3f}")
     
     # Test 2: Distribution fitting
     print("\n2. Testing distribution fitting...")
@@ -40,7 +40,7 @@ def test_basic_functionality():
     
     if best_dist:
         best_result = dist_comparison['results'][best_dist]
-        print(f"   AIC: {best_result['aic']:.4f}")
+        print(f"   AIC: {best_result['aic']:.3f}")
         print(f"   Parameters: {best_result['params']}")
     
     # Test 3: Capability metrics
@@ -52,10 +52,14 @@ def test_basic_functionality():
         )
         
         if capability['success']:
-            print(f"   Cp: {capability.get('Cp', 'N/A'):.4f}")
-            print(f"   Cpk: {capability.get('Cpk', 'N/A'):.4f}")
-            print(f"   Pp: {capability.get('Pp', 'N/A'):.4f}")
-            print(f"   Ppk: {capability.get('Ppk', 'N/A'):.4f}")
+            cp = capability.get('Cp', 'N/A')
+            cpk = capability.get('Cpk', 'N/A')
+            pp = capability.get('Pp', 'N/A')
+            ppk = capability.get('Ppk', 'N/A')
+            print(f"   Cp: {cp:.3f}" if cp != 'N/A' else "   Cp: N/A")
+            print(f"   Cpk: {cpk:.3f}" if cpk != 'N/A' else "   Cpk: N/A")
+            print(f"   Pp: {pp:.3f}" if pp != 'N/A' else "   Pp: N/A")
+            print(f"   Ppk: {ppk:.3f}" if ppk != 'N/A' else "   Ppk: N/A")
         else:
             print(f"   Capability calculation failed: {capability['message']}")
     
@@ -65,8 +69,8 @@ def test_basic_functionality():
     
     if ti_result['success']:
         lower, upper = ti_result['interval']
-        print(f"   {ti_result['type']} tolerance interval: [{lower:.4f}, {upper:.4f}]")
-        print(f"   Tolerance factor: {ti_result['factor']:.4f}")
+        print(f"   {ti_result['type']} tolerance interval: [{lower:.3f}, {upper:.3f}]")
+        print(f"   Tolerance factor: {ti_result['factor']:.3f}")
     else:
         print(f"   Tolerance interval failed: {ti_result['message']}")
     
@@ -81,7 +85,7 @@ def test_basic_functionality():
         print(f"   Compared {oos_comparison['n_methods']} methods:")
         for result in oos_comparison['comparison_table']:
             if result['Success']:
-                print(f"     {result['Method']}: {result['%OOS']:.4f}%")
+                print(f"     {result['Method']}: {result['%OOS']:.3f}%")
             else:
                 print(f"     {result['Method']}: Failed - {result['Message']}")
     

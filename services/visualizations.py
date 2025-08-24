@@ -148,7 +148,7 @@ def create_qq_plot(
     valid_mask = ~np.isnan(theoretical_quantiles)
     if np.sum(valid_mask) > 1:
         correlation = np.corrcoef(theoretical_quantiles[valid_mask], clean_data.values[valid_mask])[0, 1]
-        title += f" (R² = {correlation**2:.4f})"
+        title += f" (R² = {correlation**2:.3f})"
     
     fig.update_layout(
         title=dict(text=title, font=dict(size=14)),
@@ -193,7 +193,7 @@ def create_distribution_comparison_grid(
         dist_info = comparison_table[i]
         dist_name = dist_info["Distribution"]
         aic = dist_info["AIC"]
-        aic_str = f"AIC: {aic:.2f}" if aic is not None else "AIC: N/A"
+        aic_str = f"AIC: {aic:.3f}" if aic is not None else "AIC: N/A"
         subplot_titles.append(f"{dist_name.capitalize()} ({aic_str})")
     
     fig = make_subplots(
@@ -459,7 +459,7 @@ def create_oos_comparison_plot(
             x=methods,
             y=oos_values,
             marker_color=colors,
-            text=[f"{val:.4f}%" for val in oos_values],
+            text=[f"{val:.3f}%" for val in oos_values],
             textposition='auto'
         )
     ])
@@ -498,43 +498,83 @@ def create_coverage_scan_plot(
     
     fig = go.Figure()
     
+    # JMP-style colors
+    jmp_colors = {
+        'lower': '#4472C4',  # Professional blue
+        'upper': '#E74C3C',  # Professional red
+        'lsl': '#27AE60',    # Green for LSL
+        'usl': '#F39C12',    # Orange for USL
+        'optimal': '#8E44AD'  # Purple for optimal point
+    }
+    
     # Plot tolerance interval bounds
     if "lower_bound" in df.columns and "upper_bound" in df.columns:
         # Two-sided
-        fig.add_trace(go.Scatter(x=df["coverage_%"], y=df["lower_bound"], mode='lines', name='Lower Tolerance Bound', line=dict(color='blue')))
-        fig.add_trace(go.Scatter(x=df["coverage_%"], y=df["upper_bound"], mode='lines', name='Upper Tolerance Bound', line=dict(color='red')))
+        fig.add_trace(go.Scatter(
+            x=df["coverage_%"], 
+            y=df["lower_bound"], 
+            mode='lines', 
+            name='Lower Tolerance Bound', 
+            line=dict(color=jmp_colors['lower'], width=3)
+        ))
+        fig.add_trace(go.Scatter(
+            x=df["coverage_%"], 
+            y=df["upper_bound"], 
+            mode='lines', 
+            name='Upper Tolerance Bound', 
+            line=dict(color=jmp_colors['upper'], width=3)
+        ))
         if lsl is not None:
-            fig.add_hline(y=lsl, line_dash="dash", line_color="green", annotation_text="LSL")
+            fig.add_hline(y=lsl, line_dash="dash", line_color=jmp_colors['lsl'], 
+                         line_width=2, annotation_text="LSL")
         if usl is not None:
-            fig.add_hline(y=usl, line_dash="dash", line_color="orange", annotation_text="USL")
-        fig.update_layout(yaxis_title="Tolerance Interval Bounds")
+            fig.add_hline(y=usl, line_dash="dash", line_color=jmp_colors['usl'], 
+                         line_width=2, annotation_text="USL")
+        y_title = "Tolerance Interval Bounds"
 
     elif "upper_bound" in df.columns:
         # Upper one-sided
-        fig.add_trace(go.Scatter(x=df["coverage_%"], y=df["upper_bound"], mode='lines', name='Upper Tolerance Bound', line=dict(color='red')))
+        fig.add_trace(go.Scatter(
+            x=df["coverage_%"], 
+            y=df["upper_bound"], 
+            mode='lines', 
+            name='Upper Tolerance Bound', 
+            line=dict(color=jmp_colors['upper'], width=3)
+        ))
         if usl is not None:
-            fig.add_hline(y=usl, line_dash="dash", line_color="orange", annotation_text="USL")
-        fig.update_layout(yaxis_title="Upper Tolerance Bound")
+            fig.add_hline(y=usl, line_dash="dash", line_color=jmp_colors['usl'], 
+                         line_width=2, annotation_text="USL")
+        y_title = "Upper Tolerance Bound"
 
     elif "lower_bound" in df.columns:
         # Lower one-sided
-        fig.add_trace(go.Scatter(x=df["coverage_%"], y=df["lower_bound"], mode='lines', name='Lower Tolerance Bound', line=dict(color='blue')))
+        fig.add_trace(go.Scatter(
+            x=df["coverage_%"], 
+            y=df["lower_bound"], 
+            mode='lines', 
+            name='Lower Tolerance Bound', 
+            line=dict(color=jmp_colors['lower'], width=3)
+        ))
         if lsl is not None:
-            fig.add_hline(y=lsl, line_dash="dash", line_color="green", annotation_text="LSL")
-        fig.update_layout(yaxis_title="Lower Tolerance Bound")
+            fig.add_hline(y=lsl, line_dash="dash", line_color=jmp_colors['lsl'], 
+                         line_width=2, annotation_text="LSL")
+        y_title = "Lower Tolerance Bound"
 
     # Highlight optimal coverage point
     p_star = scan_results.get("p_star", 0)
     if p_star > 0:
         p_star_percent = p_star * 100
-        fig.add_vline(x=p_star_percent, line_dash="dot", line_color="purple",
-                      annotation_text=f"Optimal Coverage: {p_star_percent:.2f}%")
+        fig.add_vline(
+            x=p_star_percent, 
+            line_dash="solid", 
+            line_color=jmp_colors['optimal'],
+            line_width=2,
+            annotation_text=f"Max Coverage: {p_star_percent:.1f}%"
+        )
     
-    fig.update_layout(
-        title=title,
-        xaxis_title="Coverage (%)",
-        template='plotly_white'
-    )
+    # Apply JMP styling
+    fig.update_layout(xaxis_title="Coverage (%)", yaxis_title=y_title)
+    fig = apply_jmp_style(fig, title, height=350)
     
     return fig
 
@@ -544,7 +584,7 @@ def create_merged_distribution_plot(
     title: str = "Distribution Fits Comparison"
 ) -> go.Figure:
     """
-    Create a single plot with a histogram and multiple overlaid distribution fits.
+    Create a JMP-style histogram with distribution fits.
     
     Args:
         data: Input data series
@@ -552,38 +592,58 @@ def create_merged_distribution_plot(
         title: Plot title
         
     Returns:
-        Plotly figure
+        Plotly figure with JMP-style formatting
     """
     clean_data = data.dropna()
-    fig = make_subplots(
-        rows=2, cols=1,
-        shared_xaxes=True,
-        vertical_spacing=0.05,
-        row_heights=[0.8, 0.2]
-    )
+    
+    # JMP-style color palette
+    jmp_colors = {
+        'histogram': '#4472C4',  # Professional blue
+        'normal': '#E74C3C',     # Red for normal
+        'lognormal': '#F39C12',  # Orange for lognormal  
+        'weibull': '#27AE60',    # Green for weibull
+        'gamma': '#8E44AD',      # Purple for gamma
+        'logistic': '#E67E22',   # Dark orange for logistic
+        'exponential': '#34495E' # Dark gray for exponential
+    }
+    
+    fig = go.Figure()
 
-    # 1. Add histogram of the actual data to the top subplot
+    # Calculate optimal bin width using Freedman-Diaconis rule (JMP approach)
+    q75, q25 = np.percentile(clean_data, [75, 25])
+    iqr = q75 - q25
+    if iqr > 0:
+        bin_width = 2 * iqr / (len(clean_data) ** (1/3))
+        nbins = max(10, min(50, int((clean_data.max() - clean_data.min()) / bin_width)))
+    else:
+        nbins = 20
+
+    # Add histogram with JMP styling
     fig.add_trace(go.Histogram(
         x=clean_data,
-        nbinsx=30,
-        opacity=0.7,
+        nbinsx=nbins,
+        opacity=0.6,
         name='Data',
         histnorm='probability density',
-        marker_color='lightblue'
-    ), row=1, col=1)
+        marker_color=jmp_colors['histogram'],
+        marker_line_color='white',
+        marker_line_width=1,
+        showlegend=True
+    ))
 
-    # 2. Iterate through fitted distributions and add their curves to the top subplot
+    # Add fitted distribution curves
     comparison_table = comparison_results.get("comparison_table", [])
-    colors = px.colors.qualitative.Plotly
-
     x_min, x_max = clean_data.min(), clean_data.max()
     x_range = x_max - x_min
-    x_fit = np.linspace(x_min - 0.1 * x_range, x_max + 0.1 * x_range, 200)
+    x_fit = np.linspace(x_min - 0.05*x_range, x_max + 0.05*x_range, 300)
 
-    for i, dist_info in enumerate(comparison_table):
+    for i, dist_info in enumerate(comparison_table[:4]):  # Limit to top 4 distributions
         dist_name = dist_info["Distribution"]
         dist_params = dist_info["Parameters"]
-        color = colors[i % len(colors)]
+        aic = dist_info.get("AIC", float('inf'))
+        
+        # Use specific color for each distribution
+        color = jmp_colors.get(dist_name, px.colors.qualitative.Set1[i])
 
         y_fit = np.zeros_like(x_fit)
         try:
@@ -597,34 +657,124 @@ def create_merged_distribution_plot(
                 y_fit = stats.gamma.pdf(x_fit, a=dist_params["a"], scale=dist_params["scale"])
             elif dist_name == "logistic":
                 y_fit = stats.logistic.pdf(x_fit, **dist_params)
+            elif dist_name == "exponential":
+                y_fit = stats.expon.pdf(x_fit, scale=dist_params["scale"])
             
-            if np.any(y_fit):
+            if np.any(y_fit) and not np.any(np.isnan(y_fit)):
+                # Add AIC to legend name for professional look
+                legend_name = f'{dist_name.capitalize()} (AIC: {aic:.1f})'
+                
                 fig.add_trace(go.Scatter(
                     x=x_fit,
                     y=y_fit,
                     mode='lines',
-                    name=f'{dist_name.capitalize()} Fit',
-                    line=dict(color=color, width=2)
-                ), row=1, col=1)
+                    name=legend_name,
+                    line=dict(color=color, width=3, dash='solid'),
+                    showlegend=True
+                ))
         except Exception:
             continue
 
-    # 3. Add the box plot to the bottom subplot
-    fig.add_trace(go.Box(
-        x=clean_data,
-        name='Box Plot',
-        marker_color='lightgreen',
-        boxmean='sd'
-    ), row=2, col=1)
-
+    # JMP-style layout formatting
     fig.update_layout(
-        title=dict(text=title, font=dict(size=16)),
-        yaxis_title='Probability Density',
-        template='plotly_white',
-        legend_title_text='Distribution',
-        font=dict(size=12),
-        margin=dict(l=50, r=50, t=50, b=50),
-        height=500
+        title=dict(
+            text=title,
+            font=dict(size=16, family="Arial", color='#2C3E50'),
+            x=0.5,
+            xanchor='center'
+        ),
+        xaxis=dict(
+            title=dict(text="Value", font=dict(size=14, family="Arial")),
+            showgrid=True,
+            gridcolor='#E8E8E8',
+            gridwidth=1,
+            showline=True,
+            linecolor='#CCCCCC',
+            linewidth=2,
+            tickfont=dict(size=12, family="Arial"),
+            mirror=True
+        ),
+        yaxis=dict(
+            title=dict(text="Density", font=dict(size=14, family="Arial")),
+            showgrid=True,
+            gridcolor='#E8E8E8',
+            gridwidth=1,
+            showline=True,
+            linecolor='#CCCCCC',
+            linewidth=2,
+            tickfont=dict(size=12, family="Arial"),
+            mirror=True
+        ),
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        legend=dict(
+            x=0.98,
+            y=0.98,
+            xanchor='right',
+            yanchor='top',
+            bgcolor='rgba(255,255,255,0.8)',
+            bordercolor='#CCCCCC',
+            borderwidth=1,
+            font=dict(size=11, family="Arial")
+        ),
+        height=500,
+        margin=dict(l=60, r=40, t=60, b=60)
+    )
+    
+    return fig
+
+def apply_jmp_style(fig: go.Figure, title: str = None, height: int = 500) -> go.Figure:
+    """
+    Apply JMP-style formatting to any Plotly figure.
+    
+    Args:
+        fig: Plotly figure to style
+        title: Optional title override
+        height: Figure height
+        
+    Returns:
+        Styled Plotly figure
+    """
+    fig.update_layout(
+        title=dict(
+            text=title if title else fig.layout.title.text,
+            font=dict(size=16, family="Arial", color='#2C3E50'),
+            x=0.5,
+            xanchor='center'
+        ),
+        xaxis=dict(
+            showgrid=True,
+            gridcolor='#E8E8E8',
+            gridwidth=1,
+            showline=True,
+            linecolor='#CCCCCC',
+            linewidth=2,
+            tickfont=dict(size=12, family="Arial"),
+            mirror=True,
+            title=dict(font=dict(size=14, family="Arial"))
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridcolor='#E8E8E8',
+            gridwidth=1,
+            showline=True,
+            linecolor='#CCCCCC',
+            linewidth=2,
+            tickfont=dict(size=12, family="Arial"),
+            mirror=True,
+            title=dict(font=dict(size=14, family="Arial"))
+        ),
+        plot_bgcolor='white',
+        paper_bgcolor='white',
+        legend=dict(
+            bgcolor='rgba(255,255,255,0.8)',
+            bordercolor='#CCCCCC',
+            borderwidth=1,
+            font=dict(size=11, family="Arial")
+        ),
+        height=height,
+        margin=dict(l=60, r=40, t=60, b=60),
+        font=dict(family="Arial")
     )
     
     return fig

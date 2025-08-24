@@ -64,6 +64,15 @@ def create_categorical_control_chart(
 
     fig = go.Figure()
 
+    # JMP-style colors
+    jmp_colors = {
+        'data': '#4472C4',       # Professional blue for data points
+        'mean': '#27AE60',       # Green for mean line
+        'control': '#E74C3C',    # Red for control limits
+        'spec': '#8E44AD',       # Purple for specification limits
+        'outlier': '#E74C3C'     # Red for outliers
+    }
+
     # --- Plotting ---
     # Create x-axis labels
     if grouping_col and grouping_col in agg_df.columns:
@@ -75,27 +84,34 @@ def create_categorical_control_chart(
     # Store the order for explicit ordering
     x_axis_order = x_axis.tolist()
 
+    # Main data trace with JMP styling
     fig.add_trace(go.Scatter(
         x=x_axis,
         y=agg_df['y_mean'],
         mode='lines+markers',
         name='Batch Average',
-        line=dict(color='blue'),
-        marker=dict(size=6)
+        line=dict(color=jmp_colors['data'], width=2),
+        marker=dict(size=8, color=jmp_colors['data'], 
+                   line=dict(width=1, color='white'))
     ))
 
-    # Add Control Limit lines with values
-    fig.add_hline(y=mean, line_dash="solid", line_color="green", annotation_text=f"Mean ({mean:.2f})")
-    fig.add_hline(y=ucl_3s, line_dash="dash", line_color="red", annotation_text=f"+3σ ({ucl_3s:.2f})")
-    fig.add_hline(y=lcl_3s, line_dash="dash", line_color="red", annotation_text=f"-3σ ({lcl_3s:.2f})")
+    # Add Control Limit lines with JMP styling
+    fig.add_hline(y=mean, line_dash="solid", line_color=jmp_colors['mean'], 
+                  line_width=2, annotation_text=f"Mean ({mean:.3f})")
+    fig.add_hline(y=ucl_3s, line_dash="dash", line_color=jmp_colors['control'], 
+                  line_width=2, annotation_text=f"+3σ ({ucl_3s:.3f})")
+    fig.add_hline(y=lcl_3s, line_dash="dash", line_color=jmp_colors['control'], 
+                  line_width=2, annotation_text=f"-3σ ({lcl_3s:.3f})")
 
-    # Add Specification Limit lines
+    # Add Specification Limit lines with JMP styling
     if usl is not None:
-        fig.add_hline(y=usl, line_dash="solid", line_color="purple", annotation_text=f"USL ({usl:.2f})")
+        fig.add_hline(y=usl, line_dash="solid", line_color=jmp_colors['spec'], 
+                      line_width=2, annotation_text=f"USL ({usl:.3f})")
     if lsl is not None:
-        fig.add_hline(y=lsl, line_dash="solid", line_color="purple", annotation_text=f"LSL ({lsl:.2f})")
+        fig.add_hline(y=lsl, line_dash="solid", line_color=jmp_colors['spec'], 
+                      line_width=2, annotation_text=f"LSL ({lsl:.3f})")
 
-    # Highlight outliers
+    # Highlight outliers with JMP styling
     outliers = agg_df[(agg_df['y_mean'] > ucl_3s) | (agg_df['y_mean'] < lcl_3s)]
     if not outliers.empty:
         if grouping_col and grouping_col in outliers.columns:
@@ -108,15 +124,24 @@ def create_categorical_control_chart(
             y=outliers['y_mean'],
             mode='markers',
             name='Outside 3σ',
-            marker=dict(color='red', size=10, symbol='x')
+            marker=dict(color=jmp_colors['outlier'], size=12, symbol='x', 
+                       line=dict(width=2, color='white'))
         ))
 
+    # Apply JMP styling
     fig.update_layout(
-        title="Categorical Control Chart",
         xaxis_title="Categories",
         yaxis_title="Average Value",
-        template="plotly_white",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        legend=dict(
+            orientation="h", 
+            yanchor="bottom", 
+            y=1.02, 
+            xanchor="right", 
+            x=1,
+            bgcolor='rgba(255,255,255,0.8)',
+            bordercolor='#CCCCCC',
+            borderwidth=1
+        )
     )
     
     # Force x-axis to respect the sorted order
@@ -124,6 +149,10 @@ def create_categorical_control_chart(
         categoryorder='array',
         categoryarray=x_axis_order
     )
+    
+    # Import and apply JMP style function
+    from services.visualizations import apply_jmp_style
+    fig = apply_jmp_style(fig, "Categorical Control Chart", height=450)
 
     return fig
 
