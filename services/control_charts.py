@@ -60,10 +60,6 @@ def create_categorical_control_chart(
     std_dev = original_values.std()
 
     ucl_3s = mean + 3 * std_dev
-    ucl_2s = mean + 2 * std_dev
-    ucl_1s = mean + 1 * std_dev
-    lcl_1s = mean - 1 * std_dev
-    lcl_2s = mean - 2 * std_dev
     lcl_3s = mean - 3 * std_dev
 
     fig = go.Figure()
@@ -92,10 +88,6 @@ def create_categorical_control_chart(
     fig.add_hline(y=mean, line_dash="solid", line_color="green", annotation_text=f"Mean ({mean:.2f})")
     fig.add_hline(y=ucl_3s, line_dash="dash", line_color="red", annotation_text=f"+3σ ({ucl_3s:.2f})")
     fig.add_hline(y=lcl_3s, line_dash="dash", line_color="red", annotation_text=f"-3σ ({lcl_3s:.2f})")
-    fig.add_hline(y=ucl_2s, line_dash="dot", line_color="orange", annotation_text=f"+2σ ({ucl_2s:.2f})")
-    fig.add_hline(y=lcl_2s, line_dash="dot", line_color="orange", annotation_text=f"-2σ ({lcl_2s:.2f})")
-    fig.add_hline(y=ucl_1s, line_dash="dot", line_color="gray", annotation_text=f"+1σ ({ucl_1s:.2f})")
-    fig.add_hline(y=lcl_1s, line_dash="dot", line_color="gray", annotation_text=f"-1σ ({lcl_1s:.2f})")
 
     # Add Specification Limit lines
     if usl is not None:
