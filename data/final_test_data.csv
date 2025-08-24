@@ -1,0 +1,21 @@
+timestamp,lot_number,program,value
+2024-01-10 08:00:00,Lot-3,Program A,10.1
+2024-01-10 09:00:00,Lot-3,Program A,10.2
+2024-01-10 10:00:00,Lot-3,Program A,9.9
+2024-01-10 11:00:00,Lot-3,Program A,10.0
+2024-01-02 08:00:00,Lot-5,Program B,11.5
+2024-01-02 09:00:00,Lot-5,Program B,11.6
+2024-01-02 10:00:00,Lot-5,Program B,11.4
+2024-01-02 11:00:00,Lot-5,Program B,11.5
+2024-01-08 08:00:00,Lot-1,Program A,9.8
+2024-01-08 09:00:00,Lot-1,Program A,9.9
+2024-01-08 10:00:00,Lot-1,Program A,9.7
+2024-01-08 11:00:00,Lot-1,Program A,9.8
+2024-01-05 08:00:00,Lot-4,Program B,10.8
+2024-01-05 09:00:00,Lot-4,Program B,10.9
+2024-01-05 10:00:00,Lot-4,Program B,10.7
+2024-01-05 11:00:00,Lot-4,Program B,10.8
+2024-01-03 08:00:00,Lot-2,Program B,10.3
+2024-01-03 09:00:00,Lot-2,Program B,10.4
+2024-01-03 10:00:00,Lot-2,Program B,10.2
+2024-01-03 11:00:00,Lot-2,Program B,10.3

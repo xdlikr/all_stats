@@ -1,0 +1,340 @@
+/* Global font size adjustments */
+.stApp {
+    max-width: 100% !important;
+    margin: 0 !important;
+    font-size: 14px !important;
+    padding: 0 1rem !important;
+}
+
+/* Dashboard layout */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.dashboard-header {
+    background: linear-gradient(90deg, #1f4e79, #2e6fa8);
+    color: white;
+    padding: 1rem 2rem;
+    margin: -1rem -1rem 1rem -1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dashboard-content {
+    flex: 1;
+    display: flex;
+    gap: 1rem;
+    overflow: hidden;
+}
+
+.sidebar-panel {
+    width: 300px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-y: auto;
+    height: calc(100vh - 150px);
+}
+
+.main-panel {
+    flex: 1;
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-y: auto;
+    height: calc(100vh - 150px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Tab styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 1rem;
+    background: transparent;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.stTabs [data-baseweb="tab"] {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px 6px 0 0;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-bottom: none;
+}
+
+.stTabs [aria-selected="true"] {
+    background: white;
+    border-color: #007bff;
+    color: #007bff;
+    border-bottom: 2px solid white;
+    margin-bottom: -2px;
+}
+
+/* Headers - reduce size but maintain hierarchy */
+h1 {
+    font-size: 1.8rem !important;
+    margin-bottom: 1rem !important;
+}
+
+h2 {
+    font-size: 1.4rem !important;
+    margin-bottom: 0.8rem !important;
+}
+
+h3 {
+    font-size: 1.2rem !important;
+    margin-bottom: 0.6rem !important;
+}
+
+/* Main content text */
+.main .block-container {
+    font-size: 14px !important;
+}
+
+/* Metrics cards - smaller numbers */
+[data-testid="metric-container"] {
+    font-size: 0.9rem !important;
+}
+
+[data-testid="metric-container"] > div:first-child {
+    font-size: 1.2rem !important; /* metric value */
+    font-weight: 600 !important;
+}
+
+[data-testid="metric-container"] > div:last-child {
+    font-size: 0.8rem !important; /* metric label */
+}
+
+.step-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    background-color: #fafafa;
+}
+
+.step-card.completed {
+    border-color: #4caf50;
+    background-color: #e8f5e8;
+}
+
+.step-card.current {
+    border-color: #2196f3;
+    background-color: #e3f2fd;
+}
+
+.metric-card {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 0.5rem;
+    text-align: center;
+    background-color: white;
+}
+
+.metric-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #1976d2;
+}
+
+.metric-label {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+/* Streamlit widgets - smaller text */
+.stSelectbox > div > div {
+    font-size: 0.9rem !important;
+}
+
+.stSlider > div > div > div {
+    font-size: 0.85rem !important;
+}
+
+.stCheckbox > label {
+    font-size: 0.9rem !important;
+}
+
+/* Info boxes and warnings */
+.stInfo, .stWarning, .stSuccess, .stError {
+    font-size: 0.9rem !important;
+}
+
+/* Tables */
+.dataframe {
+    font-size: 0.85rem !important;
+}
+
+.dataframe th {
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+}
+
+/* Sidebar */
+.css-1d391kg {
+    font-size: 0.9rem !important;
+}
+
+/* Caption text (CI intervals, etc.) */
+.caption {
+    font-size: 0.75rem !important;
+    color: #6c757d !important;
+}
+
+/* Streamlit caption */
+.stApp [data-testid="stCaptionContainer"] {
+    font-size: 0.75rem !important;
+}
+
+/* Custom text size classes */
+.small-text {
+    font-size: 0.85rem !important;
+}
+
+.tiny-text {
+    font-size: 0.75rem !important;
+}
+
+/* Compact spacing */
+.element-container {
+    margin-bottom: 0.5rem !important;
+}
+
+/* Progress stepper */
+.stTabs [data-baseweb="tab-list"] {
+    font-size: 0.9rem !important;
+}
+
+/* Better spacing for columns */
+.row-widget {
+    margin-bottom: 0.5rem !important;
+}
+
+/* Compact cards */
+.metric-card-compact {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin: 0.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Grid layouts */
+.grid-2x2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    height: 100%;
+}
+
+.grid-3x3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    height: 100%;
+}
+
+.grid-item {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 1rem;
+    overflow: auto;
+}
+
+/* Status indicators */
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.status-complete { background: #28a745; }
+.status-current { background: #007bff; }
+.status-pending { background: #6c757d; }
+.status-warning { background: #ffc107; }
+
+/* Progress bar */
+.progress-container {
+    background: #e9ecef;
+    border-radius: 4px;
+    height: 6px;
+    margin: 0.5rem 0;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+    .sidebar-panel {
+        width: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-content {
+        flex-direction: column;
+    }
+    
+    .sidebar-panel {
+        width: 100%;
+        height: auto;
+        max-height: 200px;
+    }
+    
+    .main-panel {
+        height: calc(100vh - 350px);
+    }
+}
+
+.warning-banner {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    color: #856404;
+}
+
+.success-banner {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    color: #155724;
+}
+
+.distribution-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.distribution-card:hover {
+    border-color: #2196f3;
+    box-shadow: 0 2px 4px rgba(33, 150, 243, 0.2);
+}
+
+.distribution-card.selected {
+    border-color: #4caf50;
+    background-color: #e8f5e8;
+}
+
+.distribution-card.warning {
+    border-color: #ff9800;
+    background-color: #fff3e0;
+}
